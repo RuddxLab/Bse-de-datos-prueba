@@ -36,13 +36,15 @@ export function CalendarPage() {
   }, [dias])
 
   useEffect(() => {
+    if (!idEmpresa) return
     cargarCitas()
-  }, [cargarCitas])
+  }, [cargarCitas, idEmpresa])
 
   useEffect(() => {
+    if (!idEmpresa) return
     listPrestadoresPublico().then(setPrestadores).catch(() => setPrestadores([]))
     serviciosService.listAll('nombre_servicio').then(setServicios).catch(() => setServicios([]))
-  }, [])
+  }, [idEmpresa])
 
   const citasPorDia = useMemo(() => {
     const grupos: Record<string, Agendamiento[]> = {}

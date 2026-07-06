@@ -9,6 +9,7 @@ import { ClientesPage } from './pages/ClientesPage'
 import { PrestadoresPage } from './pages/PrestadoresPage'
 import { ServiciosPage } from './pages/ServiciosPage'
 import { SucursalesPage } from './pages/SucursalesPage'
+import { EmpresasPage } from './pages/EmpresasPage'
 
 function RutaLogin() {
   const { session, loading } = useAuth()
@@ -40,6 +41,7 @@ function RutasProtegidas() {
         <Route path="/prestadores" element={<RutaSoloCatalogo><PrestadoresPage /></RutaSoloCatalogo>} />
         <Route path="/servicios" element={<RutaSoloCatalogo><ServiciosPage /></RutaSoloCatalogo>} />
         <Route path="/sucursales" element={<RutaSoloCatalogo><SucursalesPage /></RutaSoloCatalogo>} />
+        <Route path="/empresas" element={<RutaSoloCatalogo><EmpresasPage /></RutaSoloCatalogo>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

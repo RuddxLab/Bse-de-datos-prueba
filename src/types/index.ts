@@ -45,9 +45,11 @@ export interface Prestador {
   email: string | null
   telefono: string | null
   rut: string | null
+  direccion: string | null
   ciudad: string | null
   comuna: string | null
   comision: number | null
+  reserva_online: number // 1 = sí, 0 = no
   activo: boolean
 }
 

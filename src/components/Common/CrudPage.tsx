@@ -1,11 +1,14 @@
 import { useEffect, useState, ReactNode } from 'react'
 import { Modal } from './Modal'
+import { REGIONES, REGIONES_COMUNAS } from '../../data/chileRegionesComunas'
 
 export interface CrudField {
   key: string
   label: string
-  type?: 'text' | 'number' | 'checkbox'
+  type?: 'text' | 'number' | 'checkbox' | 'sino' | 'region' | 'comuna'
   required?: boolean
+  /** Para 'comuna': de qué campo del mismo formulario depende (normalmente la región/ciudad) */
+  dependsOn?: string
 }
 
 export interface CrudColumn {
@@ -135,20 +138,90 @@ export function CrudPage<T extends Record<string, any>>({
 
       {editando && (
         <Modal title={(editando as any)[idKey] ? 'Editar' : 'Nuevo registro'} onClose={() => setEditando(null)}>
-          {campos.map((campo) => (
-            <div className="field" key={campo.key}>
-              <label>{campo.label}</label>
-              {campo.type === 'checkbox' ? (
-                <input
-                  type="checkbox"
-                  checked={Boolean((editando as any)[campo.key])}
-                  onChange={(e) => setEditando({ ...editando, [campo.key]: e.target.checked })}
-                />
-              ) : (
+          {campos.map((campo) => {
+            const valor = (editando as any)[campo.key]
+
+            if (campo.type === 'checkbox') {
+              return (
+                <div className="field" key={campo.key}>
+                  <label>{campo.label}</label>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(valor)}
+                    onChange={(e) => setEditando({ ...editando, [campo.key]: e.target.checked })}
+                  />
+                </div>
+              )
+            }
+
+            if (campo.type === 'sino') {
+              // Se guarda como 1/0 (numeric), se muestra como Sí/No
+              return (
+                <div className="field" key={campo.key}>
+                  <label>{campo.label}</label>
+                  <select
+                    value={valor ? '1' : '0'}
+                    onChange={(e) => setEditando({ ...editando, [campo.key]: Number(e.target.value) })}
+                  >
+                    <option value="1">Sí</option>
+                    <option value="0">No</option>
+                  </select>
+                </div>
+              )
+            }
+
+            if (campo.type === 'region') {
+              return (
+                <div className="field" key={campo.key}>
+                  <label>{campo.label}</label>
+                  <select
+                    value={valor ?? ''}
+                    onChange={(e) => {
+                      // al cambiar la región, se limpia la comuna dependiente para evitar combinaciones inválidas
+                      const dependiente = campos.find((c) => c.type === 'comuna' && c.dependsOn === campo.key)
+                      setEditando({
+                        ...editando,
+                        [campo.key]: e.target.value,
+                        ...(dependiente ? { [dependiente.key]: '' } : {})
+                      })
+                    }}
+                  >
+                    <option value="">Selecciona una región…</option>
+                    {REGIONES.map((r) => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+              )
+            }
+
+            if (campo.type === 'comuna') {
+              const region = campo.dependsOn ? (editando as any)[campo.dependsOn] : null
+              const comunas = region ? REGIONES_COMUNAS[region] ?? [] : []
+              return (
+                <div className="field" key={campo.key}>
+                  <label>{campo.label}</label>
+                  <select
+                    value={valor ?? ''}
+                    disabled={!region}
+                    onChange={(e) => setEditando({ ...editando, [campo.key]: e.target.value })}
+                  >
+                    <option value="">{region ? 'Selecciona una comuna…' : 'Primero elige una región'}</option>
+                    {comunas.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              )
+            }
+
+            return (
+              <div className="field" key={campo.key}>
+                <label>{campo.label}</label>
                 <input
                   type={campo.type ?? 'text'}
                   required={campo.required}
-                  value={(editando as any)[campo.key] ?? ''}
+                  value={valor ?? ''}
                   onChange={(e) =>
                     setEditando({
                       ...editando,
@@ -156,9 +229,9 @@ export function CrudPage<T extends Record<string, any>>({
                     })
                   }
                 />
-              )}
-            </div>
-          ))}
+              </div>
+            )
+          })}
           {error && <div className="error-text">{error}</div>}
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button className="btn btn--primary" onClick={guardar}>Guardar</button>

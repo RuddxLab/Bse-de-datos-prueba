@@ -7,7 +7,8 @@ const LINKS_CATALOGO = [
   { to: '/clientes', label: 'Clientes' },
   { to: '/prestadores', label: 'Prestadores' },
   { to: '/servicios', label: 'Servicios' },
-  { to: '/sucursales', label: 'Sucursales' }
+  { to: '/sucursales', label: 'Sucursales' },
+  { to: '/empresas', label: 'Empresas' }
 ]
 
 export function Sidebar() {

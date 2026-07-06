@@ -28,6 +28,7 @@ export function AppointmentModal({
 }: Props) {
   const [nombreCliente, setNombreCliente] = useState(citaExistente?.nombre_cliente ?? '')
   const [telefono, setTelefono] = useState(citaExistente?.telefono ?? '')
+  const [email, setEmail] = useState(citaExistente?.email ?? '')
   const [idPrestador, setIdPrestador] = useState<number>(citaExistente?.id_prestador ?? prestadores[0]?.id_prestador ?? 0)
   const [idServicio, setIdServicio] = useState<number>(servicios[0]?.id_servicio ?? 0)
   const [horaInicio, setHoraInicio] = useState(citaExistente?.hora_inicio ?? horaInicial)
@@ -63,6 +64,7 @@ export function AppointmentModal({
         id_cliente: 0, // el trigger v_verificar_o_crear_cliente resuelve/crea el cliente
         nombre_cliente: nombreCliente,
         telefono,
+        email,
         fecha,
         hora_inicio: horaInicio,
         hora_fin: horaFin,
@@ -102,6 +104,10 @@ export function AppointmentModal({
       <div className="field">
         <label>Teléfono</label>
         <input value={telefono ?? ''} onChange={(e) => setTelefono(e.target.value)} disabled={!!citaExistente} />
+      </div>
+      <div className="field">
+        <label>Correo</label>
+        <input type="email" value={email ?? ''} onChange={(e) => setEmail(e.target.value)} disabled={!!citaExistente} />
       </div>
       <div className="field">
         <label>Prestador</label>
